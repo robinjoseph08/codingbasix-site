@@ -1,32 +1,59 @@
+/***************************************/
+/***             REQUIRE             ***/
+/***************************************/
+
 var express = require('express')
 	, engine = require('ejs-locals')
   , app = express()
-  , mongo = require('mongojs');
-  // , io = require('socket.io').listen(server);
+  , mongo = require('mongojs')
+  , packer = require('node.packer');
 
-// io.configure(function () {
-//   io.set("transports", ["xhr-polling"]);
-//   io.set("polling duration", 10);
-// });
+/***************************************/
+/***            CONFIGURE            ***/
+/***************************************/
+
+packer({
+  log: true,
+  minify: true,
+  input: [
+    __dirname + '/stylesheets/index.css',
+    __dirname + '/stylesheets/header.css',
+  ],
+  output: __dirname + '/stylesheets/style.min.css',
+  callback: function ( err, code ){
+    err && console.log( err );
+  }
+});
 
 app.configure(function(){
-	// use ejs-locals for all ejs templates:
-	app.engine('ejs', engine);
+	// ejs
   app.set('view engine', 'ejs');
+	// ejs-locals for templating
+	app.engine('ejs', engine);
   app.set('views', __dirname + '/views');
   app.use(express.bodyParser());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
+	app.use(express.cookieParser());
+	app.use(express.session({secret: process.env.SESSION_KEY || 'SECRETKEY'}));
 });
 
+// set the port
 var port = process.env.PORT || 3000;
 
+// configure the database URL
 var databaseUrl = process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
   'robins-node-blog';
 
+// establish the mongo tables
 var collections = ['posts'];
+// connect to the mongo DB
 var db = mongo.connect(databaseUrl, collections);
+
+/***************************************/
+/***              ROUTE              ***/
+/***************************************/
 
 app.get('/', function (req, res) {
 	console.log('GET /');
@@ -42,27 +69,34 @@ app.get('/', function (req, res) {
 	//   	console.log("Post saved");
 	//   	console.log(saved);
 	// });
+  res.render('index', {
+  	post: db.posts.find()
+  });
   res.sendfile(__dirname + '/index.html');
 });
 
 app.get('/blog', function (req, res) {
 	console.log('GET /blog');
-
   res.render('blog', {
-  	title: 'Robin Joseph\'s Blog',
   	post: db.posts.find()
   });
 });
 
-app.get('/style.css', function (req, res) {
-	console.log('GET /style.css');
-  res.sendfile(__dirname + '/style.css');
+app.get('/admin', function (req, res) {
+	console.log('GET /admin');
+  res.render('admin_login', {
+  });
 });
+
+app.get('/style.min.css', function (req, res) {
+	console.log('GET /style.min.css');
+  res.sendfile(__dirname + '/stylesheets/style.min.css');
+});
+
+/***************************************/
+/***              LISTEN             ***/
+/***************************************/
 
 app.listen(port, function() {
 	console.log('Listening on port ' + port);
 });
-
-// app.get('/jquery.js', function (req, res) {
-//   res.sendfile(__dirname + '/jquery.min.js');
-// });

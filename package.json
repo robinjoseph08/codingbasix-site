@@ -1,11 +1,12 @@
 {
-  "name": "robins-node-json",
+  "name": "codebasix",
   "version": "0.0.1",
   "dependencies": {
     "mongojs": "0.7.x",
     "express": "3.1.x",
     "ejs": "0.8.x",
-    "ejs-locals": "~1.0.2"
+    "ejs-locals": "~1.0.2",
+    "node.packer": "~2.0.1"
   },
   "engines": {
     "node": "0.10.x",
@@ -13,6 +14,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/robinjoseph08/robins-node-blog.git"
+    "url": "https://github.com/robinjoseph08/codebasix-site.git"
   }
 }
