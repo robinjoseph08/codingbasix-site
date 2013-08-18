@@ -1,7 +1,79 @@
 .header {
 	padding: 10px;
+	padding-top: 30px;
+	position: relative;
+}
+
+.header .logo {
+	display: inline-block;
+	vertical-align: middle;
+	width: 40px;
+	height: 40px;
+	border-radius: 4px;
+	background: #333;
+	color: #f2f2f2;
+	font-size: 45px;
+	text-align: center;
+	box-shadow: 0 2px 3px #ddd;
+}
+
+.header .logo:hover {
+	background: #009974;
+}
+
+.header .logo span {
+	display: block;
+	height: 40px;
+	-webkit-transition-duration: 0.4s;
+	-moz-transition-duration: 0.4s;
+	-o-transition-duration: 0.4s;
+	transition-duration: 0.4s;
+	-webkit-transition-property: -webkit-transform;
+	-moz-transition-property: -moz-transform;
+	-o-transition-property: -o-transform;
+	transition-property: transform;
+	overflow:hidden;
+}
+
+.header .logo:hover span {
+	-webkit-transform:rotate(360deg);
+	-moz-transform:rotate(360deg);
+	-o-transform:rotate(360deg);
 }
 
 .header .title {
 	font-size: 36px;
+	margin-left: 5px;
+	display: inline-block;
+	vertical-align: middle;
+	text-shadow: 0 2px 3px #ddd;
+}
+
+.header .nav {
+	font-size: 20px;
+	display: inline-block;
+	vertical-align: middle;
+	position: absolute;
+	top: 50%;
+	right: 10px;
+	margin-top: -6px;
+}
+
+.header .nav ul {
+	list-style: none;
+}
+
+.header .nav ul a {
+	color: inherit;
+}
+
+.header .nav ul a:hover {
+	color: #009974;
+}
+
+.header .nav ul a li {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0 5px;
+	text-shadow: 0 2px 3px #ddd;
 }

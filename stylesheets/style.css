@@ -1,0 +1,48 @@
+@font-face {
+	font-family: 'Amble';
+	src: url('/amble-regular-webfont.eot');
+	src: url('/amble-regular-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('/amble-regular-webfont.woff') format('woff'),
+	     url('/amble-regular-webfont.ttf') format('truetype'),
+	     url('/amble-regular-webfont.svg#ambleregular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+body {
+	margin: 0 auto;
+	padding: 0;
+	background: #f8f8f8;
+	color: #333;
+	font-family: 'Amble';
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	display: block;
+	font-size: 1em;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	-webkit-margin-start: 0;
+	-webkit-margin-end: 0;
+	font-weight: normal;
+}
+
+ul {
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	-webkit-margin-start: 0;
+	-webkit-margin-end: 0;
+	-webkit-padding-start: 0;
+}
+
+div.horizontal-divider {
+	height: 1px;
+	width: 60%;
+	background: -webkit-linear-gradient(left,#f2f2f2,#999,#f2f2f2);
+	margin: 0 auto;
+}

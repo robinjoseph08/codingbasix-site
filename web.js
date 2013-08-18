@@ -16,6 +16,7 @@ packer({
   log: true,
   minify: true,
   input: [
+    __dirname + '/stylesheets/style.css',
     __dirname + '/stylesheets/index.css',
     __dirname + '/stylesheets/header.css',
   ],
@@ -75,13 +76,6 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-app.get('/blog', function (req, res) {
-	console.log('GET /blog');
-  res.render('blog', {
-  	post: db.posts.find()
-  });
-});
-
 app.get('/admin', function (req, res) {
 	console.log('GET /admin');
   res.render('admin_login', {
@@ -89,8 +83,28 @@ app.get('/admin', function (req, res) {
 });
 
 app.get('/style.min.css', function (req, res) {
-	console.log('GET /style.min.css');
+  console.log('GET /style.min.css');
   res.sendfile(__dirname + '/stylesheets/style.min.css');
+});
+
+app.get('/amble-regular-webfont.eot', function (req, res) {
+  console.log('GET /amble-regular-webfont.eot');
+  res.sendfile(__dirname + '/fonts/amble-regular-webfont.eot');
+});
+
+app.get('/amble-regular-webfont.woff', function (req, res) {
+  console.log('GET /amble-regular-webfont.woff');
+  res.sendfile(__dirname + '/fonts/amble-regular-webfont.woff');
+});
+
+app.get('/amble-regular-webfont.ttf', function (req, res) {
+  console.log('GET /amble-regular-webfont.ttf');
+  res.sendfile(__dirname + '/fonts/amble-regular-webfont.ttf');
+});
+
+app.get('/amble-regular-webfont.svg', function (req, res) {
+  console.log('GET /amble-regular-webfont.svg');
+  res.sendfile(__dirname + '/fonts/amble-regular-webfont.svg');
 });
 
 /***************************************/
