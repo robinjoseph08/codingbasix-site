@@ -1,1 +1,1 @@
-This is the source for the site http://www.codebasix.com.
+This is the source for the site http://www.codingbasix.com.

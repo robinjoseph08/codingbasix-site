@@ -1,5 +1,5 @@
 {
-  "name": "codebasix",
+  "name": "codingbasix",
   "version": "0.0.1",
   "dependencies": {
     "mongojs": "0.7.x",
