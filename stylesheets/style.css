@@ -44,5 +44,5 @@ div.horizontal-divider {
 	height: 1px;
 	width: 60%;
 	background: -webkit-linear-gradient(left,#f2f2f2,#999,#f2f2f2);
-	margin: 0 auto;
+	margin: 10px auto;
 }
