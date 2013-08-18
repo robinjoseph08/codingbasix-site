@@ -1,7 +1,34 @@
 <% layout('layout') -%>
 <% stylesheet('/style.min.css') -%>
+<% script('/scripts.min.css') -%>
+<% script('/socket.io/socket.io.js') -%>
 <% include header -%>
 <div class="home">
 	<h2 class="tagline">The interactive way to code.</h2>
 	<div class="horizontal-divider"></div>
 </div>
+
+<script type="text/javascript">
+	var term;
+	window.addEventListener('load', function() {
+	  var socket = io.connect();
+	  socket.on('connect', function() {
+	  	console.log('socket connected');
+	  });
+	  socket.on('term_res', function(data) {
+	  	console.log(data.res);
+	  });
+	  socket.emit('enter', {
+	  	cmd: 'ls'
+	  });
+	  term = function(_cmd) {
+	  	var cmd_array = _cmd.split(' ');
+	  	var cmd = cmd_array[0];
+	  	cmd_array.splice(0,1);
+	  	socket.emit('enter', {
+		  	cmd: cmd,
+		  	args: cmd_array
+		  });
+	  }
+	}, false);
+</script>

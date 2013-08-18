@@ -9,6 +9,10 @@
 	font-style: normal;
 }
 
+html {
+	-webkit-font-smoothing: antialiased;
+}
+
 body {
 	margin: 0 auto;
 	padding: 0;

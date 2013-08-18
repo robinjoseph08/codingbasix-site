@@ -2,9 +2,30 @@
 	<a href="/"><div class="logo"><span>*</span></div></a>
 	<h1 class="title">coding basix</h1>
 	<h2 class="nav">
-		<ul>
-			<a href="/tutorials"><li>tutorials</li></a>
-			<a href="/about"><li>about</li></a>
+		<ul class="nav-options">
+			<li>
+				<a href="/tutorials">tutorials</a>
+				<ul class="nav-dropdown">
+					<a href="/tutorials/unix"><li>unix</li></a>
+				</ul>
+			</li>
+			<li><a href="/about">about</a></li>
 		</ul>
 	</h2>
 </div>
+
+<script type="text/javascript">
+	$('.nav-options > li').each(function(i,el) {
+		if($(el).find('.nav-dropdown').length > 0) {
+			$(el).hover(function(args) {
+				$item = $(args.currentTarget).find('.nav-dropdown');
+				$item.toggleClass('open');
+				if($item.hasClass('open')) {
+					$item.css('height', 24 * $item.find('a').length + 'px');
+				} else {
+					$item.css('height', '0px');
+				}
+			});
+		}
+	});
+</script>

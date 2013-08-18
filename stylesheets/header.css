@@ -59,21 +59,41 @@
 	margin-top: -6px;
 }
 
-.header .nav ul {
+.header .nav .nav-options {
 	list-style: none;
 }
 
-.header .nav ul a {
-	color: inherit;
-}
-
-.header .nav ul a:hover {
-	color: #009974;
-}
-
-.header .nav ul a li {
+.header .nav .nav-options li {
 	display: inline-block;
 	vertical-align: middle;
 	margin: 0 5px;
 	text-shadow: 0 2px 3px #ddd;
 }
+
+.header .nav .nav-options li a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.header .nav .nav-options li a:hover {
+	color: #009974;
+}
+
+.header .nav .nav-options li .nav-dropdown {
+	position: absolute;
+	list-style: none;
+	height: 0;
+	overflow: hidden;
+	-webkit-transition-duration: 0.2s;
+	-moz-transition-duration: 0.2s;
+	-o-transition-duration: 0.2s;
+	transition-duration: 0.2s;
+}
+
+
+
+
+
+
+
+

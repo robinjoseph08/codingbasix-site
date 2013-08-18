@@ -5,12 +5,22 @@
 var express = require('express')
 	, engine = require('ejs-locals')
   , app = express()
+  , http = require('http')
+  , server = http.createServer(app)
+  , io = require('socket.io').listen(server)
   , mongo = require('mongojs')
-  , packer = require('node.packer');
+  , packer = require('node.packer')
+  , spawn = require('child_process').spawn;
 
 /***************************************/
 /***            CONFIGURE            ***/
 /***************************************/
+
+io.configure(function () {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 10);
+  io.set('log level', 1);
+});
 
 packer({
   log: true,
@@ -21,6 +31,18 @@ packer({
     __dirname + '/stylesheets/header.css',
   ],
   output: __dirname + '/stylesheets/style.min.css',
+  callback: function ( err, code ){
+    err && console.log( err );
+  }
+});
+
+packer({
+  log: true,
+  minify: true,
+  input: [
+    __dirname + '/scripts/jquery-1.10.2.min.js',
+  ],
+  output: __dirname + '/scripts/scripts.min.css',
   callback: function ( err, code ){
     err && console.log( err );
   }
@@ -48,7 +70,7 @@ var databaseUrl = process.env.MONGOLAB_URI ||
   'robins-node-blog';
 
 // establish the mongo tables
-var collections = ['posts'];
+var collections = ['tutorial_categories'];
 // connect to the mongo DB
 var db = mongo.connect(databaseUrl, collections);
 
@@ -70,10 +92,7 @@ app.get('/', function (req, res) {
 	//   	console.log("Post saved");
 	//   	console.log(saved);
 	// });
-  res.render('index', {
-  	post: db.posts.find()
-  });
-  res.sendfile(__dirname + '/index.html');
+  res.render('index', {});
 });
 
 app.get('/admin', function (req, res) {
@@ -85,6 +104,11 @@ app.get('/admin', function (req, res) {
 app.get('/style.min.css', function (req, res) {
   console.log('GET /style.min.css');
   res.sendfile(__dirname + '/stylesheets/style.min.css');
+});
+
+app.get('/scripts.min.css', function (req, res) {
+  console.log('GET /scripts.min.css');
+  res.sendfile(__dirname + '/scripts/scripts.min.css');
 });
 
 app.get('/amble-regular-webfont.eot', function (req, res) {
@@ -111,6 +135,19 @@ app.get('/amble-regular-webfont.svg', function (req, res) {
 /***              LISTEN             ***/
 /***************************************/
 
-app.listen(port, function() {
+server.listen(port, function() {
 	console.log('Listening on port ' + port);
+});
+
+/***************************************/
+/***            SOCKET.IO            ***/
+/***************************************/
+
+io.sockets.on('connection', function(socket) {
+  socket.on('enter', function(data) {
+    var cmd = spawn(data.cmd,data.args);
+    cmd.stdout.on('data', function (data) {
+      socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
+    });
+  });
 });
