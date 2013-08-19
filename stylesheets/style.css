@@ -69,6 +69,7 @@ div.horizontal-divider {
 	height: 400px;
 	width: 70%;
 	margin: 0 auto;
+	box-shadow: 0 10px 30px #333;
 }
 
 .terminal-window .terminal-topbar {

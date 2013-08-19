@@ -68,6 +68,7 @@
 				}
 				$(this).find('.terminal-past-output').append('<div>' + $(this).find('.terminal-prompt').html() + cmd + '</div>');
 				$(this).find('.terminal-input').html('');
+	  		$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
 				break;
 			case 8: // if they press backspace
 				var current = $(this).find('.terminal-input').html();
