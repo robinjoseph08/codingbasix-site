@@ -167,13 +167,43 @@ server.listen(port, function() {
 
 io.sockets.on('connection', function(socket) {
   var bash = spawn('bash');
+  bash.stdin.write('cd\n');
+  var state = 0;
   bash.stdout.on('data', function(data) {
-    socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
+    switch(state) {
+      case 0:
+        socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
+        state = 1;
+        bash.stdin.write('pwd\n');
+        break;
+      case 1:
+        socket.emit('dir', {res: '' + data}); // add the '' + to convert to string
+        state = 0;
+        break;
+    }
   });
   bash.stderr.on('data', function(data) {
-    socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
+    switch(state) {
+      case 0:
+        socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
+        state = 1;
+        bash.stdin.write('pwd\n');
+        break;
+      case 1:
+        socket.emit('dir', {res: '' + data}); // add the '' + to convert to string
+        state = 0;
+        break;
+    }
   });
   socket.on('enter', function(data) {
-    var cmd = bash.stdin.write(data.cmd + '\n');
+    if(new RegExp('^su( |$)|^sudo( |$)').test(data.cmd)) {
+      bash.stdin.write('echo \'No root for you!\'\n');
+    } else {
+      bash.stdin.write(data.cmd + '\n');
+    }
+    if(new RegExp('^cd').test(data.cmd) || data.cmd == '') {
+      state = 1;
+      bash.stdin.write('pwd\n');
+    }
   });
 });

@@ -16,9 +16,9 @@
 			<div class="terminal-topbar-title">bash</div>
 		</div>
 		<div class="terminal-content" tabindex="0">
-			<div class="terminal-past-output"></div>
+			<div class="terminal-past-output">Welcome to coding basix!<br><br>Feel free to mess around with this interactive terminal or get started with one of the many tutorials on the site!<br><br></div>
 			<div class="terminal-current-line">
-				<span class="terminal-prompt">coding-basix:~ guest$ </span>
+				<span class="terminal-prompt">coding-basix:<span class="cwd">~</span> guest$ </span>
 				<span class="terminal-input"></span>
 				<span class="terminal-cursor"> </span>
 			</div>
@@ -27,6 +27,7 @@
 </div>
 
 <script type="text/javascript">
+	var home = '/Users/robinjoseph';
 	var term;
 	window.addEventListener('load', function() {
 	  var socket = io.connect();
@@ -34,8 +35,18 @@
 	  	console.log('socket connected');
 	  });
 	  socket.on('term_res', function(data) {
-	  	$('.terminal-past-output').append(data.res);
+	  	$('.terminal-past-output').append('<div>' + data.res.trim().replace(/\n/g,'<br>') + '</div>');
+	  });
+	  socket.on('dir', function(data) {
+	  	if(data.res.trim() == home) {
+	  		$('.terminal-current-line').find('.cwd').text('~');
+	  	} else {
+	  		var a = data.res.trim().split('/');
+	  		var dir = (a.length > 1 ? a[a.length-1] : '/');
+	  		$('.terminal-current-line').find('.cwd').text(dir);
+	  	}
 	  	$('.terminal-current-line').css('display','block');
+	  	$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
 	  });
 	  term = function(cmd) {
 	  	socket.emit('enter', {
@@ -45,23 +56,25 @@
 	}, false);
 
 	$('.terminal-content').keypress(function(e) {
-		console.log(e);
-		console.log(String.fromCharCode(e.keyCode));
 		switch(e.which) {
-			case 8:
+			case 8: // if they press backspace
 				var current = $(this).find('.terminal-input').html();
 				$(this).find('.terminal-input').html(current.substr(0,current.length-1));
 				break;
-			case 13:
+			case 13: // if they press enter
 				var cmd = $(this).find('.terminal-input').html();
 				$(this).find('.terminal-past-output').append('<div>' + $(this).find('.terminal-prompt').html() + cmd + '</div>');
 				$(this).find('.terminal-input').html('');
 				$(this).find('.terminal-current-line').css('display','none');
 				term(cmd);
 				break;
-			default:
+			default: // if they press anything else
 				$(this).find('.terminal-input').append(String.fromCharCode(e.keyCode));
 				break;
+		}
+	}).keydown(function(e) {
+		if(e.which == 9) { // if they press tab
+			e.preventDefault();
 		}
 	}).focus();
 </script>
