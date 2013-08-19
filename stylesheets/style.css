@@ -107,6 +107,7 @@ div.horizontal-divider {
 	position: relative;
 	text-align: left;
 	overflow: scroll;
+	word-wrap: break-word;
 	color: #fff;
 	font-family: 'SourceCodePro';
 	background: #000;

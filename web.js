@@ -168,16 +168,26 @@ server.listen(port, function() {
 io.sockets.on('connection', function(socket) {
   var bash = spawn('bash');
   bash.stdin.write('cd\n');
-  var state = 0;
+  var state = 3;
+  bash.stdin.write('echo $HOME\n');
   bash.stdout.on('data', function(data) {
     switch(state) {
-      case 0:
+      case 0: // normal cmds
         socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
         state = 1;
         bash.stdin.write('pwd\n');
         break;
-      case 1:
+      case 1: // pwd for current dir
         socket.emit('dir', {res: '' + data}); // add the '' + to convert to string
+        state = 0;
+        break;
+      case 2: // tab completion
+        socket.emit('tab', {res: '' + data}); // add the '' + to convert to string
+        state = 0;
+        break;
+      case 3: // find $HOME
+        var str = '' + data;
+        socket.emit('home', {res: str.substr(0,str.length-1)}); // add the '' + to convert to string
         state = 0;
         break;
     }
@@ -186,24 +196,45 @@ io.sockets.on('connection', function(socket) {
     switch(state) {
       case 0:
         socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
-        state = 1;
-        bash.stdin.write('pwd\n');
         break;
       case 1:
         socket.emit('dir', {res: '' + data}); // add the '' + to convert to string
         state = 0;
         break;
+      case 2:
+        console.log('' + data);
+        socket.emit('tab', {res: '' + data}); // add the '' + to convert to string
+        state = 0;
+        break;
     }
   });
   socket.on('enter', function(data) {
-    if(new RegExp('^su( |$)|^sudo( |$)').test(data.cmd)) {
-      bash.stdin.write('echo \'No root for you!\'\n');
+    var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
+    console.log(_cmd);
+    if(new RegExp('^su( |$)|^sudo( |$)').test(_cmd)) {
+      bash.stdin.write('echo \'~~~ No root for you! ~~~\'\n');
     } else {
-      bash.stdin.write(data.cmd + '\n');
+      bash.stdin.write(_cmd + '\n');
     }
-    if(new RegExp('^cd').test(data.cmd) || data.cmd == '') {
+    if(new RegExp('^cd|^$').test(_cmd)) {
       state = 1;
       bash.stdin.write('pwd\n');
     }
+  });
+  socket.on('tab', function(data) {
+    var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
+    var cur = '', cmd;
+    var cmd_array = _cmd.split(' ');
+    while(cmd_array.length > 1 && cmd_array[cmd_array.length-2][cmd_array[cmd_array.length-2].length-1] == '\\') {
+      cmd_array[cmd_array.length-1] = cmd_array[cmd_array.length-2] + ' ' + cmd_array[cmd_array.length-1];
+      cmd_array.splice(cmd_array.length-2,1);
+    }
+    var cmd_array2 = cmd_array[cmd_array.length-1].split('/');
+    cmd = cmd_array2[cmd_array2.length-1];
+    for(var i = 0; i < cmd_array2.length-1; i++) {
+      cur += cmd_array2[i] + '/';
+    }
+    state = 2;
+    bash.stdin.write('ls ' + cur + ' | egrep ^' + cmd + '\n');
   });
 });
