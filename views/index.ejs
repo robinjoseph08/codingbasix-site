@@ -58,8 +58,17 @@
 	}, false);
 
 	$('.terminal-content').keypress(function(e) {
-		console.log(e.which);
+		console.log(e);
+		console.log(String.fromCharCode(e.keyCode));
 		switch(e.which) {
+			case 3: // if they press ^C
+				var cmd = $(this).find('.terminal-input').html();
+				if(cmd != '') {
+					cmd = cmd + '^C'
+				}
+				$(this).find('.terminal-past-output').append('<div>' + $(this).find('.terminal-prompt').html() + cmd + '</div>');
+				$(this).find('.terminal-input').html('');
+				break;
 			case 8: // if they press backspace
 				var current = $(this).find('.terminal-input').html();
 				$(this).find('.terminal-input').html(current.substr(0,current.length-1));
