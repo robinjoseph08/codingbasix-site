@@ -27,6 +27,8 @@
 </div>
 
 <script type="text/javascript">
+	var bash_history = [''];
+	var history_index = 1;
 	var home = '/Users/robinjoseph';
 	var term;
 	window.addEventListener('load', function() {
@@ -35,14 +37,14 @@
 	  	console.log('socket connected');
 	  });
 	  socket.on('term_res', function(data) {
-	  	$('.terminal-past-output').append('<div>' + data.res.trim().replace(/\n/g,'<br>') + '</div>');
+	  	$('.terminal-past-output').append('<pre>' + data.res.trim().replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</pre>');
 	  });
 	  socket.on('dir', function(data) {
 	  	if(data.res.trim() == home) {
 	  		$('.terminal-current-line').find('.cwd').text('~');
 	  	} else {
 	  		var a = data.res.trim().split('/');
-	  		var dir = (a.length > 1 ? a[a.length-1] : '/');
+	  		var dir = (a[a.length-1] == '' ? '/' : a[a.length-1]);
 	  		$('.terminal-current-line').find('.cwd').text(dir);
 	  	}
 	  	$('.terminal-current-line').css('display','block');
@@ -56,6 +58,7 @@
 	}, false);
 
 	$('.terminal-content').keypress(function(e) {
+		console.log(e.which);
 		switch(e.which) {
 			case 8: // if they press backspace
 				var current = $(this).find('.terminal-input').html();
@@ -63,6 +66,10 @@
 				break;
 			case 13: // if they press enter
 				var cmd = $(this).find('.terminal-input').html();
+				if(cmd != '') {
+					bash_history.splice(bash_history.length-1,0,cmd);
+				}
+				history_index = 1;
 				$(this).find('.terminal-past-output').append('<div>' + $(this).find('.terminal-prompt').html() + cmd + '</div>');
 				$(this).find('.terminal-input').html('');
 				$(this).find('.terminal-current-line').css('display','none');
@@ -73,8 +80,26 @@
 				break;
 		}
 	}).keydown(function(e) {
-		if(e.which == 9) { // if they press tab
-			e.preventDefault();
+		console.log(e.which);
+		switch(e.which) {
+			case 9: // if they press tab
+				e.preventDefault();
+				break;
+			case 38: // if they press the up arrow
+				e.preventDefault();
+				$(this).find('.terminal-input').html(bash_history[bash_history.length-(++history_index)]);
+				if(history_index > bash_history.length) {
+					history_index = bash_history.length;
+				}
+				break;
+			case 40: // if they press the down arrow
+				e.preventDefault();
+				$(this).find('.terminal-input').html(bash_history[bash_history.length-(--history_index)]);
+				if(history_index < 1) {
+					history_index = 1;
+				}
+				break;
 		}
+		console.log(history_index);
 	}).focus();
 </script>

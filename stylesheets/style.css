@@ -113,6 +113,15 @@ div.horizontal-divider {
 	padding: 3px;
 }
 
+.terminal-window .terminal-content .terminal-past-output pre {
+	font-family: 'SourceCodePro';
+	white-space: pre;
+	margin-top: 0;
+	margin-right: 0;
+	margin-bottom: 0;
+	margin-left: 0;
+}
+
 .terminal-window .terminal-content:focus {
 	outline: none;
 }
@@ -128,6 +137,7 @@ div.horizontal-divider {
 
 .terminal-window .terminal-content .terminal-input {
 	float: left;
+	white-space: pre;
 }
 
 .terminal-window .terminal-content .terminal-cursor {
