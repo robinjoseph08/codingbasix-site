@@ -111,6 +111,7 @@ app.get('/scripts.min.css', function (req, res) {
   res.sendfile(__dirname + '/scripts/scripts.min.css');
 });
 
+// Amble Font
 app.get('/amble-regular-webfont.eot', function (req, res) {
   console.log('GET /amble-regular-webfont.eot');
   res.sendfile(__dirname + '/fonts/amble-regular-webfont.eot');
@@ -131,6 +132,27 @@ app.get('/amble-regular-webfont.svg', function (req, res) {
   res.sendfile(__dirname + '/fonts/amble-regular-webfont.svg');
 });
 
+// Source Code Pro Font
+app.get('/sourcecodepro-regular-webfont.eot', function (req, res) {
+  console.log('GET /sourcecodepro-regular-webfont.eot');
+  res.sendfile(__dirname + '/fonts/sourcecodepro-regular-webfont.eot');
+});
+
+app.get('/sourcecodepro-regular-webfont.woff', function (req, res) {
+  console.log('GET /sourcecodepro-regular-webfont.woff');
+  res.sendfile(__dirname + '/fonts/sourcecodepro-regular-webfont.woff');
+});
+
+app.get('/sourcecodepro-regular-webfont.ttf', function (req, res) {
+  console.log('GET /sourcecodepro-regular-webfont.ttf');
+  res.sendfile(__dirname + '/fonts/sourcecodepro-regular-webfont.ttf');
+});
+
+app.get('/sourcecodepro-regular-webfont.svg', function (req, res) {
+  console.log('GET /sourcecodepro-regular-webfont.svg');
+  res.sendfile(__dirname + '/fonts/sourcecodepro-regular-webfont.svg');
+});
+
 /***************************************/
 /***              LISTEN             ***/
 /***************************************/
@@ -144,10 +166,14 @@ server.listen(port, function() {
 /***************************************/
 
 io.sockets.on('connection', function(socket) {
+  var bash = spawn('bash');
+  bash.stdout.on('data', function(data) {
+    socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
+  });
+  bash.stderr.on('data', function(data) {
+    socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
+  });
   socket.on('enter', function(data) {
-    var cmd = spawn(data.cmd,data.args);
-    cmd.stdout.on('data', function (data) {
-      socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
-    });
+    var cmd = bash.stdin.write(data.cmd + '\n');
   });
 });

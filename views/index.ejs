@@ -6,6 +6,24 @@
 <div class="home">
 	<h2 class="tagline">The interactive way to code.</h2>
 	<div class="horizontal-divider"></div>
+	<div class="terminal-window">
+		<div class="terminal-topbar">
+			<div class="terminal-topbar-buttons-container">
+				<div class="terminal-topbar-button"></div>
+				<div class="terminal-topbar-button"></div>
+				<div class="terminal-topbar-button"></div>
+			</div>
+			<div class="terminal-topbar-title">bash</div>
+		</div>
+		<div class="terminal-content" tabindex="0">
+			<div class="terminal-past-output"></div>
+			<div class="terminal-current-line">
+				<span class="terminal-prompt">coding-basix:~ guest$ </span>
+				<span class="terminal-input"></span>
+				<span class="terminal-cursor"> </span>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -16,19 +34,34 @@
 	  	console.log('socket connected');
 	  });
 	  socket.on('term_res', function(data) {
-	  	console.log(data.res);
+	  	$('.terminal-past-output').append(data.res);
+	  	$('.terminal-current-line').css('display','block');
 	  });
-	  socket.emit('enter', {
-	  	cmd: 'ls'
-	  });
-	  term = function(_cmd) {
-	  	var cmd_array = _cmd.split(' ');
-	  	var cmd = cmd_array[0];
-	  	cmd_array.splice(0,1);
+	  term = function(cmd) {
 	  	socket.emit('enter', {
 		  	cmd: cmd,
-		  	args: cmd_array
 		  });
 	  }
 	}, false);
+
+	$('.terminal-content').keypress(function(e) {
+		console.log(e);
+		console.log(String.fromCharCode(e.keyCode));
+		switch(e.which) {
+			case 8:
+				var current = $(this).find('.terminal-input').html();
+				$(this).find('.terminal-input').html(current.substr(0,current.length-1));
+				break;
+			case 13:
+				var cmd = $(this).find('.terminal-input').html();
+				$(this).find('.terminal-past-output').append('<div>' + $(this).find('.terminal-prompt').html() + cmd + '</div>');
+				$(this).find('.terminal-input').html('');
+				$(this).find('.terminal-current-line').css('display','none');
+				term(cmd);
+				break;
+			default:
+				$(this).find('.terminal-input').append(String.fromCharCode(e.keyCode));
+				break;
+		}
+	}).focus();
 </script>

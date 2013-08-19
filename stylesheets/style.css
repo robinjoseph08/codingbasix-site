@@ -9,6 +9,17 @@
 	font-style: normal;
 }
 
+@font-face {
+	font-family: 'SourceCodePro';
+	src: url('/sourcecodepro-regular-webfont.eot');
+	src: url('/sourcecodepro-regular-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('/sourcecodepro-regular-webfont.woff') format('woff'),
+	     url('/sourcecodepro-regular-webfont.ttf') format('truetype'),
+	     url('/sourcecodepro-regular-webfont.svg#source_code_proregular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
 html {
 	-webkit-font-smoothing: antialiased;
 }
@@ -50,3 +61,78 @@ div.horizontal-divider {
 	background: -webkit-linear-gradient(left,#f2f2f2,#999,#f2f2f2);
 	margin: 10px auto;
 }
+
+.terminal-window {
+	border-radius: 5px;
+	overflow: hidden;
+	height: 300px;
+	width: 70%;
+	margin: 0 auto;
+}
+
+.terminal-window .terminal-topbar {
+	position: relative;
+	background: #bababa;
+	background: -webkit-linear-gradient(top,#e6e6e6,#bababa);
+	border: 1px #bababa solid;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.terminal-window .terminal-topbar .terminal-topbar-buttons-container {
+	position: absolute;
+	left: 5px;
+}
+
+.terminal-window .terminal-topbar .terminal-topbar-buttons-container .terminal-topbar-button {
+	display: inline-block;
+	vertical-align: middle;
+	border-radius: 50%;
+	height: 12px;
+	width: 12px;
+	background: #ddd;
+	box-shadow: inset 0 0 3px #333, inset 0 3px 1px #eee, inset 0 -4px 2px #eee;
+}
+
+.terminal-window .terminal-topbar .terminal-topbar-title {
+	display: inline-block;
+	vertical-align: middle;
+	color: #333;
+	text-shadow: 0 -1px 1px #999;
+}
+
+.terminal-window .terminal-content {
+	position: relative;
+	text-align: left;
+	color: #fff;
+	font-family: 'SourceCodePro';
+	background: #000;
+	height: 270px;
+	padding: 3px;
+}
+
+.terminal-window .terminal-content:focus {
+	outline: none;
+}
+
+.terminal-window .terminal-content .terminal-prompt {
+	float: left;
+	margin-right: 9px;
+}
+
+.terminal-window .terminal-content .terminal-input {
+	float: left;
+}
+
+.terminal-window .terminal-content .terminal-cursor {
+	float: left;
+	background: #606060;
+	height: 19px;
+	width: 10px;
+}
+
+
+
+
+
+
