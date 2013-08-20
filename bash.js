@@ -30,10 +30,14 @@ process.on('message', function(m) {
 		    console.log('grep process exited with code ' + code);
 		  }
 		});
+  } else if(m.ctrl_d) {
+  	if(cmd_stack.length > 0) {
+  		cmd_stack[cmd_stack.length-1].stdin.end();
+  	}
   } else {
 	  var cmd = spawn(m.cmd, m.cmd_array);
-	  cmd_stack.push(cmd.pid);
-	  console.log(cmd_stack);
+	  cmd_stack.push(cmd);
+	  console.log(cmd_stack.length);
 	  if(m.cmd == 'cd') {
 			process.chdir((m.cmd_array.length > 0 ? m.cmd_array[0] : process.env['HOME']));
 	  }
@@ -49,9 +53,9 @@ process.on('message', function(m) {
 			process.send({ stdout: '' + data });
 	  });
 	  cmd.on('close',function() {
-	  	console.log('the cmd closed');
-	  	cmd_stack.splice(cmd_stack.indexOf(cmd.pid),1);
-	  	console.log(cmd_stack);
+	  	console.log('this cmd has closed');
+	  	cmd_stack.splice(cmd_stack.indexOf(this),1);
+	  	console.log(cmd_stack.length);
 			process.send({ cwd: process.cwd() });
 	  });
 	}
