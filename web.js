@@ -230,9 +230,24 @@ io.sockets.on('connection', function(socket) {
     }
     bashjs.send({ tab: true, cmd: cmd, cur: cur });
   });
+  // ^C
+  socket.on('ctrl_c', function(data) {
+    bashjs.send({ ctrl_c: true });
+  });
+  // ^D
+  socket.on('ctrl_d', function(data) {
+    bashjs.send({ ctrl_d: true });
+  });
 
   socket.on('disconnect', function () {
     console.log('socket disconnected');
     bashjs.disconnect();
   });
 });
+
+
+
+
+
+
+
