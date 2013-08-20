@@ -148,7 +148,22 @@ div.horizontal-divider {
 	margin-right: 9px;
 }
 
-.terminal-window .terminal-content .terminal-input {
+.terminal-window .terminal-content .terminal-current-line input {
+	background: transparent;
+	color: #fff;
+	font-family: 'SourceCodePro';
+	-webkit-font-smoothing:antialiased;
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.terminal-window .terminal-content .terminal-current-line input:focus {
+	outline: none;
+}
+
+/*.terminal-window .terminal-content .terminal-input {
 	float: left;
 	white-space: pre;
 }
@@ -158,7 +173,7 @@ div.horizontal-divider {
 	background: #606060;
 	height: 19px;
 	width: 10px;
-}
+}*/
 
 .feedback {
 	position: fixed;
@@ -181,21 +196,6 @@ div.horizontal-divider {
 
 .feedback .terminal-window .terminal-content {
 	height: 23px;
-}
-
-.feedback .terminal-window .terminal-content .terminal-current-line input {
-	background: transparent;
-	color: #fff;
-	font-family: 'SourceCodePro';
-	-webkit-font-smoothing:antialiased;
-	font-size: 16px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-}
-
-.feedback .terminal-window .terminal-content .terminal-current-line input:focus {
-	outline: none;
 }
 
 .not-found {

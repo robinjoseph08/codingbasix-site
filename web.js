@@ -207,11 +207,6 @@ io.sockets.on('connection', function(socket) {
         socket.emit('dir', {res: '' + data}); // add the '' + to convert to string
         state = 0;
         break;
-      case 2:
-        console.log('' + data);
-        socket.emit('tab', {res: '' + data}); // add the '' + to convert to string
-        state = 0;
-        break;
     }
   });
   // enetered command
