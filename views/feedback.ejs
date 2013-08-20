@@ -1,27 +1,30 @@
 <div class="feedback">
-	<h3>Want a tutorial on a topic not covered here? Let me know below.</h3>
-	<div class="terminal-window">
-		<div class="terminal-topbar">
-			<div class="terminal-topbar-buttons-container">
-				<div class="terminal-topbar-button"></div>
-				<div class="terminal-topbar-button"></div>
-				<div class="terminal-topbar-button"></div>
+	<div class="feedback-icon"><i class="icon-refresh icon-spin"></i> <span>requests</span></div>
+	<div class="feedback-inner">
+		<h3>Want a tutorial on a topic not covered here? Let me know below.</h3>
+		<div class="terminal-window">
+			<div class="terminal-topbar">
+				<div class="terminal-topbar-buttons-container">
+					<div class="terminal-topbar-button"></div>
+					<div class="terminal-topbar-button"></div>
+					<div class="terminal-topbar-button"></div>
+				</div>
+				<div class="terminal-topbar-title">requests</div>
 			</div>
-			<div class="terminal-topbar-title">requests</div>
-		</div>
-		<div class="terminal-content">
-			<div class="terminal-current-line">
-				<span class="terminal-prompt">coding-basix:<span class="cwd">~</span> requests$ </span>
-				<form class="feedback">
-					<input type="text">
-				</form>
+			<div class="terminal-content">
+				<div class="terminal-current-line">
+					<span class="terminal-prompt">coding-basix:<span class="cwd">~</span> requests$ </span>
+					<form class="feedback-form">
+						<input type="text">
+					</form>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
-	$('form.feedback').submit(function(e) {
+	$('form.feedback-form').submit(function(e) {
 		$.ajax({
 			dataType: 'json',
 			data: {
@@ -31,6 +34,7 @@
 			url: '/requests',
 			success: function () {
 				console.log('success');
+				$('.feedback .feedback-icon span').html('thanks!');
 			},
 			error: function (data) {
 				console.log('error');
@@ -38,4 +42,35 @@
 		});
 		return false;
 	});
+	// $('.feedback').hover(function() {
+	// 	$(this).toggleClass('feedback-hovered');
+	// 	if($(this).hasClass('feedback-hovered')) {
+	// 		$(this).css('bottom','30px').find('.feedback-inner').css('opacity','1');
+	// 	} else {
+	// 		$(this).css('bottom','-100px').find('.feedback-inner').css('opacity','0');
+	// 	}
+	// });
+	// var feedback_bounces = 0,
+	// 	feedback_bounces_max = 5,
+	// 	feedback_interval;
+	// feedback_interval = setInterval(function() {
+	// 	if(feedback_bounces != feedback_bounces_max) {
+	// 		if(feedback_bounces++ % 2 == 0) {
+	// 			$('.feedback').css('bottom','40px');
+	// 		} else {
+	// 			$('.feedback').css('bottom','30px');
+	// 		}
+	// 	} else {
+	// 		clearInterval(feedback_interval);
+	// 		$('.feedback').css('bottom','-100px').find('.feedback-inner').css('opacity','0');
+	// 		$('.feedback').hover(function() {
+	// 			$(this).toggleClass('feedback-hovered');
+	// 			if($(this).hasClass('feedback-hovered')) {
+	// 				$(this).css('bottom','30px').find('.feedback-inner').css('opacity','1');
+	// 			} else {
+	// 				$(this).css('bottom','-100px').find('.feedback-inner').css('opacity','0');
+	// 			}
+	// 		}).removeClass('feedback-hovered');
+	// 	}
+	// },1000);
 </script>

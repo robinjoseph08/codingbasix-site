@@ -27,10 +27,12 @@
 	-webkit-transition-duration: 0.4s;
 	-moz-transition-duration: 0.4s;
 	-o-transition-duration: 0.4s;
+	-ms-transition: all 0.4s ease-in-out;
 	transition-duration: 0.4s;
 	-webkit-transition-property: -webkit-transform;
 	-moz-transition-property: -moz-transform;
 	-o-transition-property: -o-transform;
+	-ms-transition-property: -ms-transform;
 	transition-property: transform;
 	overflow:hidden;
 }

@@ -177,9 +177,39 @@ div.horizontal-divider {
 
 .feedback {
 	position: fixed;
-	bottom: 30px;
+	padding-bottom: 30px;
+	bottom: -120px;
 	left: 0;
 	right: 0;
+	-webkit-transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	-ms-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
+}
+
+.feedback:hover {
+	bottom: 0px;
+}
+
+.feedback .feedback-icon {
+	font-size: 18px;
+	text-align: center;
+	text-shadow: 0 2px 3px #ddd;
+	cursor: default;
+}
+
+.feedback .feedback-inner {
+	opacity: 0;
+	-webkit-transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	-ms-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
+}
+
+.feedback:hover .feedback-inner {
+	opacity: 1;
 }
 
 .feedback h3 {

@@ -30,6 +30,7 @@ packer({
     __dirname + '/stylesheets/index.css',
     __dirname + '/stylesheets/header.css',
     __dirname + '/stylesheets/tutorials.css',
+    __dirname + '/stylesheets/font-awesome.min.css',
   ],
   output: __dirname + '/stylesheets/style.min.css',
   callback: function ( err, code ){
@@ -149,6 +150,12 @@ app.get('/amble-regular-webfont.(eot|woff|ttf|svg)', function (req, res) {
 app.get('/sourcecodepro-regular-webfont.(eot|woff|ttf|svg)', function (req, res) {
   console.log('GET /sourcecodepro-regular-webfont.' + req.params[0]);
   res.sendfile(__dirname + '/fonts/sourcecodepro-regular-webfont.' + req.params[0]);
+});
+
+// Font Awesome
+app.get('/fontawesome-webfont.(eot|woff|ttf|svg)', function (req, res) {
+  console.log('GET /fontawesome-webfont.' + req.params[0]);
+  res.sendfile(__dirname + '/fonts/fontawesome-webfont.' + req.params[0]);
 });
 
 // Catch All For 404
