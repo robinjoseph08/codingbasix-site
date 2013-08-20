@@ -1,0 +1,52 @@
+.tutorials-toc h1 {
+	font-size: 36px;
+	text-align: center;
+	padding: 20px;
+	text-shadow: 0 2px 3px #ddd;
+}
+
+.tutorials-toc ul {
+	font-size: 24px;
+	width: 500px;
+	margin: 0 auto;
+	list-style: none;
+}
+
+.tutorials-toc ul a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.tutorials-toc ul a:hover {
+	color: #009974;
+}
+
+.toc h1 {
+	font-size: 36px;
+	text-align: center;
+	padding: 20px;
+	text-shadow: 0 2px 3px #ddd;
+}
+
+.toc ul {
+	font-size: 24px;
+	width: 500px;
+	margin: 0 auto;
+	list-style: none;
+}
+
+.toc ul a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.toc ul a:hover {
+	color: #009974;
+}
+
+.lesson h1 {
+	font-size: 36px;
+	text-align: center;
+	padding: 20px;
+	text-shadow: 0 2px 3px #ddd;
+}

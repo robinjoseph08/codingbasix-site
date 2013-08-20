@@ -38,7 +38,8 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+p {
 	display: block;
 	font-size: 1em;
 	-webkit-margin-before: 0;
@@ -74,6 +75,7 @@ div.horizontal-divider {
 
 .terminal-window .terminal-topbar {
 	position: relative;
+	text-align: center;
 	background: #bababa;
 	background: -webkit-linear-gradient(top,#e6e6e6,#bababa);
 	border: 1px #bababa solid;
@@ -115,6 +117,15 @@ div.horizontal-divider {
 	padding: 3px;
 }
 
+.terminal-window .terminal-content .terminal-content-textarea {
+	position: absolute;
+	width: 100%;
+	height: 370px;
+	border-radius: 0px;
+	top: 0;
+	left: 0;
+}
+
 .terminal-window .terminal-content .terminal-past-output pre {
 	font-family: 'SourceCodePro';
 	white-space: pre;
@@ -147,6 +158,65 @@ div.horizontal-divider {
 	background: #606060;
 	height: 19px;
 	width: 10px;
+}
+
+.feedback {
+	position: fixed;
+	bottom: 30px;
+	left: 0;
+	right: 0;
+}
+
+.feedback h3 {
+	font-size: 18px;
+	text-align: center;
+	padding: 20px;
+	text-shadow: 0 2px 3px #ddd;
+}
+
+.feedback .terminal-window {
+	width: 500px;
+	height: 53px;
+}
+
+.feedback .terminal-window .terminal-content {
+	height: 23px;
+}
+
+.feedback .terminal-window .terminal-content .terminal-current-line input {
+	background: transparent;
+	color: #fff;
+	font-family: 'SourceCodePro';
+	-webkit-font-smoothing:antialiased;
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.feedback .terminal-window .terminal-content .terminal-current-line input:focus {
+	outline: none;
+}
+
+.not-found {
+	text-align: center;
+}
+
+.not-found h1 {
+	font-size: 60px;
+	padding: 20px;
+	text-shadow: 0 2px 3px #ddd;
+}
+
+.not-found h2 {
+	font-size: 36px;
+	padding: 0 20px;
+	text-shadow: 0 2px 3px #ddd;
+}
+
+.not-found p {
+	font-size: 24px;
+	padding: 30px 70px;
 }
 
 

@@ -1,4 +1,4 @@
-<% layout('layout') -%>
+<% layout('/layout') -%>
 <% stylesheet('/style.min.css') -%>
 <% script('/scripts.min.css') -%>
 <% script('/socket.io/socket.io.js') -%>
@@ -39,6 +39,7 @@
 	  socket.on('term_res', function(data) {
 	  	$('.terminal-past-output').append('<pre>' + data.res.trim().replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/-/g,'&#45;').replace(/\n/g,'<br>') + '</pre>');
 	  	$('.terminal-current-line').css('display','block');
+	  	console.log('term_res event');
 	  	$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
 	  });
 	  socket.on('dir', function(data) {
@@ -50,6 +51,7 @@
 	  		$('.terminal-current-line').find('.cwd').text(dir);
 	  	}
 	  	$('.terminal-current-line').css('display','block');
+	  	console.log('dir event');
 	  	$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
 	  });
 	  socket.on('tab', function(data) {
@@ -82,10 +84,12 @@
 					$('.terminal-past-output').append('<div>' + completion_array[i] + '</div>');
 				}
 			}
+	  	console.log('tab event');
 	  	$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
 	  });
 	  socket.on('home', function(data) {
 	  	home = data.res;
+	  	console.log('home event');
 	  });
 	  term = function(cmd, _evt) {
 	  	var evt = _evt || 'enter';
@@ -96,8 +100,8 @@
 	}, false);
 
 	$('.terminal-content').keypress(function(e) {
-		console.log(e);
-		console.log(String.fromCharCode(e.keyCode));
+		// console.log(e);
+		// console.log(String.fromCharCode(e.keyCode));
 		switch(e.which) {
 			case 3: // if they press ^C
 				var cmd = $(this).find('.terminal-input').html();
@@ -106,6 +110,7 @@
 				}
 				$(this).find('.terminal-past-output').append('<div>' + $(this).find('.terminal-prompt').html() + cmd + '</div>');
 				$(this).find('.terminal-input').html('');
+	  		console.log('^C');
 	  		$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
 				break;
 			case 8: // if they press backspace
@@ -128,7 +133,7 @@
 				break;
 		}
 	}).keydown(function(e) {
-		console.log(e.which);
+		// console.log(e.which);
 		switch(e.which) {
 			case 9: // if they press tab
 				e.preventDefault();
@@ -151,4 +156,5 @@
 				break;
 		}
 	}).focus();
+	$(window).scrollTop('0');
 </script>
