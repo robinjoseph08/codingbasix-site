@@ -10,7 +10,8 @@ var express = require('express')
   , io = require('socket.io').listen(server)
   , mongo = require('mongojs')
   , packer = require('node.packer')
-  , spawn = require('child_process').spawn;
+  , spawn = require('child_process').spawn
+  , fork = require('child_process').fork;
 
 /***************************************/
 /***            CONFIGURE            ***/
@@ -178,59 +179,40 @@ server.listen(port, function() {
 /***************************************/
 
 io.sockets.on('connection', function(socket) {
-  var bash = spawn('bash');
-  bash.stdin.write('cd\n');
-  var state = 3;
-  bash.stdin.write('echo $HOME\n');
-  // listen for when the bash shell returns something
-  bash.stdout.on('data', function(data) {
-    switch(state) {
-      case 0: // normal cmds
-        socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
-        state = 1;
-        bash.stdin.write('pwd\n');
-        break;
-      case 1: // pwd for current dir
-        socket.emit('dir', {res: '' + data}); // add the '' + to convert to string
-        state = 0;
-        break;
-      case 2: // tab completion
-        socket.emit('tab', {res: '' + data}); // add the '' + to convert to string
-        state = 0;
-        break;
-      case 3: // find $HOME
-        var str = '' + data;
-        socket.emit('home', {res: str.substr(0,str.length-1)}); // add the '' + to convert to string
-        state = 0;
-        break;
+  var bashjs = fork(__dirname + '/bash.js');
+  socket.emit('home', {res: process.env['HOME']});
+  bashjs.on('message',function(m) {
+    if(m.stdout) {
+      socket.emit('term_res', {res: m.stdout});
     }
-  });
-  bash.stderr.on('data', function(data) {
-    switch(state) {
-      case 0:
-        socket.emit('term_res', {res: '' + data}); // add the '' + to convert to string
-        break;
-      case 1:
-        socket.emit('dir', {res: '' + data}); // add the '' + to convert to string
-        state = 0;
-        break;
+    if(m.cwd) {
+      socket.emit('dir', {res: m.cwd});
+    }
+    if(m.tab) {
+      socket.emit('tab', {res: m.tab});
     }
   });
   // enetered command
   socket.on('enter', function(data) {
     var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
-    console.log(_cmd);
-    if(new RegExp('(^ *| *\| *| *&& *| *; *)su( |$)|(^ *| *\| *| *&& *| *; *(then)* *)sudo( |$|;|&&)','g').test(_cmd)) {
-      bash.stdin.write('echo \'~~~ No root for you! ~~~\'\n');
-    } else if(new RegExp('(^ *| *\| *| *&& *| *; *)rm( |$)|(^ *| *\| *| *&& *| *; *(then)* *)srm( |$|;|&&)','g').test(_cmd)) {
-      bash.stdin.write('echo \'~~~ You probably shouldn\'\'t be deleting things you don\'\'t know about... ~~~\'\n');
-    } else {
-      bash.stdin.write(_cmd + '\n');
+    // console.log(_cmd);
+    // if(new RegExp('(^ *| *\| *| *&& *| *; *)su( |$)|(^ *| *\| *| *&& *| *; *(then)* *)sudo( |$|;|&&)','g').test(_cmd)) {
+    //   bash.stdin.write('echo \'~~~ No root for you! ~~~\'\n');
+    // } else if(new RegExp('(^ *| *\| *| *&& *| *; *)rm( |$)|(^ *| *\| *| *&& *| *; *(then)* *)srm( |$|;|&&)','g').test(_cmd)) {
+    //   bash.stdin.write('echo \'~~~ You probably shouldn\'\'t be deleting things you don\'\'t know about... ~~~\'\n');
+    // } else {
+    //   bash.stdin.write(_cmd + '\n');
+    // }
+    // if(new RegExp('(^ *| *\| *| *&& *| *; *(then)* *)cd *[^|]*$|^ *$|>','g').test(_cmd)) {
+    //   state = 1;
+    //   bash.stdin.write('pwd\n');
+    // }
+    var cmd_array = _cmd.split(' ');
+    while(cmd_array.length > 1 && cmd_array[cmd_array.length-2][cmd_array[cmd_array.length-2].length-1] == '\\') {
+      cmd_array[cmd_array.length-1] = cmd_array[cmd_array.length-2] + ' ' + cmd_array[cmd_array.length-1]
+      cmd_array.splice(cmd_array.length-2,1);
     }
-    if(new RegExp('(^ *| *\| *| *&& *| *; *(then)* *)cd *[^|]*$|^ *$|>','g').test(_cmd)) {
-      state = 1;
-      bash.stdin.write('pwd\n');
-    }
+    bashjs.send({ cmd: cmd_array[0], cmd_array: cmd_array.slice(1,cmd_array.length) });
   });
   // tab completion
   socket.on('tab', function(data) {
@@ -246,11 +228,11 @@ io.sockets.on('connection', function(socket) {
     for(var i = 0; i < cmd_array2.length-1; i++) {
       cur += cmd_array2[i] + '/';
     }
-    state = 2;
-    bash.stdin.write('ls ' + cur + ' | egrep ^' + cmd + '\n');
+    bashjs.send({ tab: true, cmd: cmd, cur: cur });
   });
 
   socket.on('disconnect', function () {
-    bash.stdin.write('exit\n');
+    console.log('socket disconnected');
+    bashjs.disconnect();
   });
 });
