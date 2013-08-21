@@ -21,7 +21,7 @@
 				<span class="terminal-prompt">coding-basix:<span class="cwd">~</span> guest$ </span>
 				<!-- <span class="terminal-input"></span>
 				<span class="terminal-cursor"> </span> -->
-				<input type="text" autocapitalize="off" />
+				<input type="text" autocapitalize="off" autocorrect="off" />
 			</div>
 		</div>
 	</div>
@@ -127,13 +127,18 @@
 		switch(e.which) {
 			case 3: // if they press ^C
 				var cmd = $(this).val();
-				if(cmd != '') {
+				if(cmd != '' || content.find('.terminal-prompt').css('display') == 'none') {
 					cmd = cmd + '^C'
 				}
-				content.find('.terminal-past-output').append('<div>' + content.find('.terminal-prompt').html() + cmd + '</div>');
+				if(content.find('.terminal-prompt').css('display') == 'none') { // stdin
+					content.find('.terminal-past-output').append('<div>' + cmd + '</div>');
+				} else {
+					content.find('.terminal-past-output').append('<div>' + content.find('.terminal-prompt').html() + cmd + '</div>');
+				}
 				$(this).val('');
 	  		console.log('^C');
 	  		$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
+				term(null,'ctrl_c');
 				break;
 			case 8: // if they press backspace
 				var current = $(this).val().replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
@@ -197,7 +202,7 @@
 			case 68: // if they press D
 				console.log('pressed D');
 				if(e.ctrlKey) { // if they press ^D
-					console.log('^D')
+					console.log('^D');
 					term(null,'ctrl_d');
 				}
 				break;

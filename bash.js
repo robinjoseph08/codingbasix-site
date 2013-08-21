@@ -5,7 +5,7 @@ var spawn = require('child_process').spawn,
 
 process.on('message', function(m) {
   console.log('CHILD got message:', m);
-  if(m.tab) {
+  if(m.tab) { // tab completion
   	var ls = spawn('ls', (m.cur != '' ? [m.cur] : [])),
     	egrep = spawn('egrep', ['^' + m.cmd]);
     ls.stdout.on('data', function (data) {
@@ -32,15 +32,19 @@ process.on('message', function(m) {
 		    console.log('grep process exited with code ' + code);
 		  }
 		});
-  } else if(m.ctrl_d) {
+  } else if(m.ctrl_d) { // ^D
   	if(cmd_stack.length > 0) {
   		cmd_stack[cmd_stack.length-1].stdin.end();
   	}
-  } else if(m.stdin) {
+  } else if(m.ctrl_c) { // ^C
+  	if(cmd_stack.length > 0) {
+  		cmd_stack[cmd_stack.length-1].kill('SIGINT');
+  	}
+  } else if(m.stdin) { // funnel input to stdin of last cmd
 		if(cmd_stack.length > 0) {
 			cmd_stack[cmd_stack.length-1].stdin.write(m.str);
 		}
-  } else {
+  } else { // new cmd
   	var cd_index = (m.cmd == 'cd' ? [0] : []);
 		var cmd = m.cmd + ' ';
 		for(var i = 0; i < m.cmd_array.length; i++) {
