@@ -171,6 +171,10 @@ div.horizontal-divider {
 	.terminal-window .terminal-content {
 		font-size: 12px;
 	}
+
+	.terminal-window .terminal-content .terminal-current-line input {
+		font-size: 12px;
+	}
 }
 
 .feedback {

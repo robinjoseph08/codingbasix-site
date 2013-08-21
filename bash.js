@@ -70,7 +70,11 @@ process.on('message', function(m) {
 	  console.log(cmd_stack.length);
 	  if(cd_index.length > 0) {
 			for(var i = 0; i < cd_index.length; i++) {
-				process.chdir((m.cmd_array[cd_index[i]] ? m.cmd_array[cd_index[i]] : process.env['HOME']));
+				try {
+					process.chdir((m.cmd_array[cd_index[i]] ? m.cmd_array[cd_index[i]] : process.env['HOME']));
+				} catch(err) {
+					// process.send({ stdout: '' + err });
+				}
 			}
 	  }
 	}
