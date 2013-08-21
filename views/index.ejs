@@ -48,7 +48,7 @@
   });
   socket.on('term_res', function(data) {
   	$('.terminal-past-output').append('<pre>' + data.res.trim().replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/-/g,'&#45;').replace(/\n/g,'<br>') + '</pre>');
-  	$('.terminal-current-line').css('opacity','1');
+  	$('.terminal-current-line .terminal-prompt').css('display','inline');
   	$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
   });
   socket.on('dir', function(data) {
@@ -59,7 +59,7 @@
   		var dir = (a[a.length-1] == '' ? '/' : a[a.length-1]);
   		$('.terminal-current-line').find('.cwd').text(dir);
   	}
-  	$('.terminal-current-line').css('opacity','1');
+  	$('.terminal-current-line .terminal-prompt').css('display','inline');
 		$('.terminal-current-line input').css('width', $('.terminal-current-line').width() - $('.terminal-prompt').width() - 10 + 'px').focus();
   	$('.terminal-content').scrollTop($('.terminal-content')[0].scrollHeight);
   });
@@ -140,16 +140,24 @@
 				$(this).val(current.substr(0,current.length-1));
 				break;
 			case 13: // if they press enter
-				var cmd = $(this).val();
-				if(cmd != '') {
-					bash_history.splice(bash_history.length-1,0,cmd);
+				if(content.find('.terminal-prompt').css('display') == 'none') { // stdin
+					var str = $(this).val() + '\n';
+					content.find('.terminal-past-output').append('<div>' + str + '</div>');
+					$(this).val('').focus();
+	  			content.scrollTop(content[0].scrollHeight);
+					term(str,'stdin');
+				} else {
+					var cmd = $(this).val();
+					if(cmd != '') {
+						bash_history.splice(bash_history.length-1,0,cmd);
+					}
+					history_index = 1;
+					content.find('.terminal-past-output').append('<div>' + content.find('.terminal-prompt').html() + cmd + '</div>');
+					$(this).val('').focus();
+					content.find('.terminal-current-line .terminal-prompt').css('display','none');
+	  			content.scrollTop(content[0].scrollHeight);
+					term(cmd);
 				}
-				history_index = 1;
-				content.find('.terminal-past-output').append('<div>' + content.find('.terminal-prompt').html() + cmd + '</div>');
-				$(this).val('').focus();
-				content.find('.terminal-current-line').css('opacity','0');
-  			content.scrollTop(content[0].scrollHeight);
-				term(cmd);
 				break;
 			// default: // if they press anything else
 			// 	$(this).find('.terminal-current-line input').append(String.fromCharCode(e.keyCode));
@@ -168,19 +176,23 @@
 				break;
 			case 38: // if they press the up arrow
 				e.preventDefault();
-				if(history_index == bash_history.length) {
-					history_index = bash_history.length - 1;
+				if($(this).closest('.terminal-current-line').find('.terminal-prompt').css('display') != 'none') {
+					if(history_index == bash_history.length) {
+						history_index = bash_history.length - 1;
+					}
+					$(this).val(bash_history[bash_history.length-(++history_index)]);
 				}
-				$(this).val(bash_history[bash_history.length-(++history_index)]);
 				break;
 			case 39: // if they press the right arrow
 				break;
 			case 40: // if they press the down arrow
 				e.preventDefault();
-				if(history_index == 1) {
-					history_index = 2;
+				if($(this).closest('.terminal-current-line').find('.terminal-prompt').css('display') != 'none') {
+					if(history_index == 1) {
+						history_index = 2;
+					}
+					$(this).val(bash_history[bash_history.length-(--history_index)]);
 				}
-				$(this).val(bash_history[bash_history.length-(--history_index)]);
 				break;
 			case 68: // if they press D
 				console.log('pressed D');

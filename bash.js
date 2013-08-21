@@ -1,4 +1,6 @@
 var spawn = require('child_process').spawn,
+	exec = require('child_process').exec,
+	fs = require('fs'),
 	cmd_stack = [];
 
 process.on('message', function(m) {
@@ -34,30 +36,43 @@ process.on('message', function(m) {
   	if(cmd_stack.length > 0) {
   		cmd_stack[cmd_stack.length-1].stdin.end();
   	}
+  } else if(m.stdin) {
+		if(cmd_stack.length > 0) {
+			cmd_stack[cmd_stack.length-1].stdin.write(m.str);
+		}
   } else {
-	  var cmd = spawn(m.cmd, m.cmd_array);
-	  cmd_stack.push(cmd);
-	  console.log(cmd_stack.length);
-	  if(m.cmd == 'cd') {
-			process.chdir((m.cmd_array.length > 0 ? m.cmd_array[0] : process.env['HOME']));
-	  }
-	  cmd.on('error',function(err) {
-	  	console.log('the cmd errored');
-	  	console.log(err);
-	  });
-	  cmd.stderr.on('data', function(data) {
-	  	console.log('' + data);
-	  });
-	  cmd.stdout.on('data', function(data) {
-	  	console.log('' + data);
-			process.send({ stdout: '' + data });
-	  });
-	  cmd.on('close',function() {
+  	var cd_index = (m.cmd == 'cd' ? [0] : []);
+		var cmd = m.cmd + ' ';
+		for(var i = 0; i < m.cmd_array.length; i++) {
+			cmd += m.cmd_array[i] + ' ';
+			if(m.cmd_array[i] == 'cd') {
+				cd_index.push(i + 1);
+			}
+		}
+		cmd_stack.push(exec(cmd, function(err,stdout,stderr) {
+			if(stdout) {
+		  	console.log('' + stdout);
+				process.send({ stdout: '' + stdout });
+			}
+			if(stderr) {
+		  	console.log('' + stderr);
+				process.send({ stdout: '' + stderr });
+			}
+			if(err) {
+		  	console.log('the cmd errored');
+		  	console.log(err);
+			}
 	  	console.log('this cmd has closed');
 	  	cmd_stack.splice(cmd_stack.indexOf(this),1);
 	  	console.log(cmd_stack.length);
 			process.send({ cwd: process.cwd() });
-	  });
+		}));
+	  console.log(cmd_stack.length);
+	  if(cd_index.length > 0) {
+			for(var i = 0; i < cd_index.length; i++) {
+				process.chdir((m.cmd_array[cd_index[i]] ? m.cmd_array[cd_index[i]] : process.env['HOME']));
+			}
+	  }
 	}
 });
 

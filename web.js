@@ -194,7 +194,8 @@ io.sockets.on('connection', function(socket) {
   });
   // enetered command
   socket.on('enter', function(data) {
-    var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
+    console.log(data.cmd);
+    var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&').replace(/;/g,' ; ').replace(/ +/g,' ').replace(/^ | $/g,'');
     // console.log(_cmd);
     // if(new RegExp('(^ *| *\| *| *&& *| *; *)su( |$)|(^ *| *\| *| *&& *| *; *(then)* *)sudo( |$|;|&&)','g').test(_cmd)) {
     //   bash.stdin.write('echo \'~~~ No root for you! ~~~\'\n');
@@ -212,6 +213,13 @@ io.sockets.on('connection', function(socket) {
       cmd_array[cmd_array.length-1] = cmd_array[cmd_array.length-2] + ' ' + cmd_array[cmd_array.length-1]
       cmd_array.splice(cmd_array.length-2,1);
     }
+    console.log(cmd_array);
+    // var cmds_array = [];
+    // var current_cmd = [];
+    // for(var i = 0; i < cmd_array.length; i++) {
+
+    // }
+    // bashjs.send({ cmds: [{ cmd: cmd_array[0], cmd_array: cmd_array.slice(1,cmd_array.length) }] });
     bashjs.send({ cmd: cmd_array[0], cmd_array: cmd_array.slice(1,cmd_array.length) });
   });
   // tab completion
@@ -237,6 +245,11 @@ io.sockets.on('connection', function(socket) {
   // ^D
   socket.on('ctrl_d', function(data) {
     bashjs.send({ ctrl_d: true });
+  });
+  // stdin
+  socket.on('stdin', function(data) {
+    var str = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
+    bashjs.send({ stdin: true, str: str });
   });
 
   socket.on('disconnect', function () {
