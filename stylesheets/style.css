@@ -163,17 +163,15 @@ div.horizontal-divider {
 	outline: none;
 }
 
-/*.terminal-window .terminal-content .terminal-input {
-	float: left;
-	white-space: pre;
-}
+@media all and (max-width: 800px) {
+	.terminal-window {
+		width: 90%;
+	}
 
-.terminal-window .terminal-content .terminal-cursor {
-	float: left;
-	background: #606060;
-	height: 19px;
-	width: 10px;
-}*/
+	.terminal-window .terminal-content {
+		font-size: 12px;
+	}
+}
 
 .feedback {
 	position: fixed;
