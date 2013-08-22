@@ -135,16 +135,39 @@ app.get('/style.min.css', function (req, res) {
   console.log('GET /style.min.css');
   res.sendfile(__dirname + '/stylesheets/style.min.css');
 });
-
 app.get('/scripts.min.css', function (req, res) {
   console.log('GET /scripts.min.css');
   res.sendfile(__dirname + '/scripts/scripts.min.css');
 });
 
-// Amble Font
+// Tutorial Image Assets
+app.get('/images/tutorials/:category/:id/:image.png', function (req, res) {
+  console.log('GET /images/tutorials/' + req.params['category'] + '/' + req.params['id'] + '/' + req.params['image'] + '.png');
+  res.sendfile(__dirname + '/images/tutorials/' + req.params['category'] + '/' + req.params['id'] + '/' + req.params['image'] + '.png');
+});
+
+// Amble Regular Font
 app.get('/amble-regular-webfont.(eot|woff|ttf|svg)', function (req, res) {
   console.log('GET /amble-regular-webfont.' + req.params[0]);
   res.sendfile(__dirname + '/fonts/amble-regular-webfont.' + req.params[0]);
+});
+
+// Amble Bold Font
+app.get('/Amble-Bold-webfont.(eot|woff|ttf|svg)', function (req, res) {
+  console.log('GET /Amble-Bold-webfont.' + req.params[0]);
+  res.sendfile(__dirname + '/fonts/Amble-Bold-webfont.' + req.params[0]);
+});
+
+// Amble Light Font
+app.get('/Amble-Light-webfont.(eot|woff|ttf|svg)', function (req, res) {
+  console.log('GET /Amble-Light-webfont.' + req.params[0]);
+  res.sendfile(__dirname + '/fonts/Amble-Light-webfont.' + req.params[0]);
+});
+
+// Amble Light Italic Font
+app.get('/Amble-LightItalic-webfont.(eot|woff|ttf|svg)', function (req, res) {
+  console.log('GET /Amble-LightItalic-webfont.' + req.params[0]);
+  res.sendfile(__dirname + '/fonts/Amble-LightItalic-webfont.' + req.params[0]);
 });
 
 // Source Code Pro Font

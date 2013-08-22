@@ -7,9 +7,12 @@
 
 .tutorials-toc ul {
 	font-size: 24px;
-	width: 500px;
+	width: 100%;
+	max-width: 500px;
 	margin: 0 auto;
+	padding: 20px;
 	list-style: none;
+	box-sizing: border-box;
 }
 
 .tutorials-toc ul a {
@@ -30,9 +33,12 @@
 
 .toc ul {
 	font-size: 24px;
-	width: 500px;
+	width: 100%;
+	max-width: 500px;
 	margin: 0 auto;
+	padding: 20px;
 	list-style: none;
+	box-sizing: border-box;
 }
 
 .toc ul a {
@@ -49,4 +55,37 @@
 	text-align: center;
 	padding: 20px;
 	text-shadow: 0 2px 3px #ddd;
+}
+
+.lesson .lesson-body {
+	font-family: 'AmbleLight';
+	margin: 0 auto;
+	font-size: 20px;
+	padding: 20px;
+	width: 80%;
+	max-width: 960px;
+	box-sizing: border-box;
+}
+
+.lesson .lesson-body h2 {
+	font-family: 'AmbleBold';
+	font-size: 30px;
+	margin-bottom: 30px;
+}
+
+.lesson .lesson-body img {
+	width: 100%;
+}
+
+.lesson .lesson-body .image-caption {
+	font-family: 'AmbleLightItalic';
+	text-align: center;
+	font-size: 16px;
+	/*margin-top: -50px;*/
+}
+
+@media all and (max-width: 800px) {
+	.lesson .lesson-body {
+		width: 90%;
+	}
 }

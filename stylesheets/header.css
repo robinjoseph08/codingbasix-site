@@ -105,7 +105,9 @@
 		text-align: center;
 	}
 	.header .nav {
-		display: none;
+		position: static;
+		display: block;
+		margin: 10px 0;
 	}
 }
 

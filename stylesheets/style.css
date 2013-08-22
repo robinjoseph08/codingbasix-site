@@ -10,6 +10,39 @@
 }
 
 @font-face {
+	font-family: 'AmbleBold';
+	src: url('/Amble-Bold-webfont.eot');
+	src: url('/Amble-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('/Amble-Bold-webfont.woff') format('woff'),
+	     url('/Amble-Bold-webfont.ttf') format('truetype'),
+	     url('/Amble-Bold-webfont.svg#amblebold') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'AmbleLight';
+	src: url('/Amble-Light-webfont.eot');
+	src: url('/Amble-Light-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('/Amble-Light-webfont.woff') format('woff'),
+	     url('/Amble-Light-webfont.ttf') format('truetype'),
+	     url('/Amble-Light-webfont.svg#amblelight') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'AmbleLightItalic';
+	src: url('/Amble-LightItalic-webfont.eot');
+	src: url('/Amble-LightItalic-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('/Amble-LightItalic-webfont.woff') format('woff'),
+	     url('/Amble-LightItalic-webfont.ttf') format('truetype'),
+	     url('/Amble-LightItalic-webfont.svg#amblelight_italic') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
 	font-family: 'SourceCodePro';
 	src: url('/sourcecodepro-regular-webfont.eot');
 	src: url('/sourcecodepro-regular-webfont.eot?#iefix') format('embedded-opentype'),
@@ -182,20 +215,13 @@ div.horizontal-divider {
 }
 
 .feedback {
-	position: fixed;
-	padding-bottom: 30px;
-	bottom: -120px;
-	left: 0;
-	right: 0;
+	margin-top: 50px;
+	margin-bottom: 30px;
 	-webkit-transition: all 0.5s ease-in-out;
 	-moz-transition: all 0.5s ease-in-out;
 	-o-transition: all 0.5s ease-in-out;
 	-ms-transition: all 0.5s ease-in-out;
 	transition: all 0.5s ease-in-out;
-}
-
-.feedback:hover {
-	bottom: 0px;
 }
 
 .feedback .feedback-icon {
@@ -206,16 +232,11 @@ div.horizontal-divider {
 }
 
 .feedback .feedback-inner {
-	opacity: 0;
 	-webkit-transition: all 0.5s ease-in-out;
 	-moz-transition: all 0.5s ease-in-out;
 	-o-transition: all 0.5s ease-in-out;
 	-ms-transition: all 0.5s ease-in-out;
 	transition: all 0.5s ease-in-out;
-}
-
-.feedback:hover .feedback-inner {
-	opacity: 1;
 }
 
 .feedback h3 {
@@ -226,12 +247,23 @@ div.horizontal-divider {
 }
 
 .feedback .terminal-window {
-	width: 500px;
-	height: 53px;
+	width: 90%;
+	max-width: 500px;
+	height: 52px;
 }
 
 .feedback .terminal-window .terminal-content {
 	height: 23px;
+}
+
+@media all and (max-width: 800px) {
+	.feedback .terminal-window {
+		height: 46px;
+	}
+
+	.feedback .terminal-window .terminal-content {
+		height: 17px;
+	}
 }
 
 .not-found {

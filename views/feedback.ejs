@@ -42,6 +42,10 @@
 		});
 		return false;
 	});
+	$(window).resize(function() {
+		$('.feedback .terminal-current-line input').css('width', $('.feedback .terminal-current-line').width() - $('.feedback .terminal-prompt').width() - 10 + 'px');
+	});
+	$('.feedback .terminal-current-line input').css('width', $('.feedback .terminal-current-line').width() - $('.feedback .terminal-prompt').width() - 10 + 'px');
 	// $('.feedback').hover(function() {
 	// 	$(this).toggleClass('feedback-hovered');
 	// 	if($(this).hasClass('feedback-hovered')) {
