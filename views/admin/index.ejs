@@ -1,0 +1,16 @@
+<% layout('/layout') -%>
+<% stylesheet('/style.min.css') -%>
+<% script('/scripts.min.css') -%>
+<% script('/socket.io/socket.io.js') -%>
+<% include ../header -%>
+<div class="admin">
+	<h1>login</h1>
+	<% if(error) { %>
+	<p class="error">Sorry, that username/password combo wasn't valid.</p>
+	<% } %>
+	<form method="post">
+		<input type="text" name="username" placeholder="username">
+		<input type="password" name="password" placeholder="password">
+		<input type="submit" value="login">
+	</form>
+</div>

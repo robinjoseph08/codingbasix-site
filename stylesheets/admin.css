@@ -1,0 +1,51 @@
+.admin {
+	text-align: center;
+}
+
+.admin h1 {
+	font-size: 36px;
+	padding: 20px;
+	text-shadow: 0 2px 3px #ddd;
+}
+
+.admin .error {
+	color: #CE2015;
+	font-family: 'AmbleLightItalic';
+}
+
+.admin input {
+	display: block;
+	font-size: 16px;
+	border-radius: 5px;
+	border: 1px #ddd solid;
+	-webkit-appearance: none;
+	-webkit-font-smoothing: antialiased;
+	height: auto;
+	padding: 5px;
+	box-shadow: inset 0 0 5px #ddd;
+	margin: 15px auto;
+	background: #fff;
+}
+
+.admin input:focus {
+	outline: none;
+}
+
+.admin input[type="submit"] {
+	box-shadow: 0 0 5px #ddd;
+	padding: 5px 20px;
+	background: #bababa;
+	background: -webkit-linear-gradient(top,#e6e6e6,#bababa);
+	border: 1px #bababa solid;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	cursor: pointer;
+}
+
+.admin input[type="submit"]:hover {
+	background: -webkit-linear-gradient(top,#dddddd,#cccccc);
+}
+
+.admin input[type="submit"]:active {
+	background: -webkit-linear-gradient(top,#bababa,#e6e6e6);
+}

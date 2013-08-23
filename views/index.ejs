@@ -207,7 +207,11 @@
 				}
 				break;
 		}
-	}).focus();
+	}).focus(function() {
+		$('.terminal-current-line input').each(function(i,el) {
+			$(el).css('width', $(el).closest('.terminal-current-line').width() - $(el).prev('.terminal-prompt').width() - 10 + 'px');
+		});
+	});
 	$('.terminal-content').click(function() {
 		$(this).find('input').focus();
 	});
@@ -215,8 +219,5 @@
 		$('.terminal-current-line input').each(function(i,el) {
 			$(el).css('width', $(el).closest('.terminal-current-line').width() - $(el).prev('.terminal-prompt').width() - 10 + 'px');
 		});
-	});
-	$('.terminal-current-line input').each(function(i,el) {
-		$(el).css('width', $(el).closest('.terminal-current-line').width() - $(el).prev('.terminal-prompt').width() - 10 + 'px');
 	});
 </script>

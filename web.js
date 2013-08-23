@@ -11,7 +11,8 @@ var express = require('express')
   , mongo = require('mongojs')
   , packer = require('node.packer')
   , spawn = require('child_process').spawn
-  , fork = require('child_process').fork;
+  , fork = require('child_process').fork
+  , bcrypt = require('bcrypt');
 
 /***************************************/
 /***            CONFIGURE            ***/
@@ -31,6 +32,7 @@ packer({
     __dirname + '/stylesheets/index.css',
     __dirname + '/stylesheets/header.css',
     __dirname + '/stylesheets/tutorials.css',
+    __dirname + '/stylesheets/admin.css',
     __dirname + '/stylesheets/font-awesome.min.css',
   ],
   output: __dirname + '/stylesheets/style.min.css',
@@ -73,7 +75,7 @@ var databaseUrl = process.env.MONGOLAB_URI ||
   'robins-node-blog';
 
 // establish the mongo tables
-var collections = ['tutorial_categories'];
+var collections = ['users','tutorial_categories'];
 // connect to the mongo DB
 var db = mongo.connect(databaseUrl, collections);
 
@@ -115,8 +117,31 @@ app.get('/tutorials/:category/:id', function (req, res) {
 });
 
 app.get('/blog', function (req, res) {
-  console.log('GET /tutorials');
+  console.log('GET /blog');
   res.render('blog', {});
+});
+
+app.get('/admin', function (req, res) {
+  console.log('GET /admin');
+  res.render('admin', { error: false });
+});
+
+app.post('/admin', function (req, res) {
+  console.log('POST /admin');
+  if(req.body.username == 'test' && req.body.password == 'pw') {
+    res.json(200, { data: 'got em'});
+  } else {
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(req.body.password, salt, function(err, hash) {
+        db.users.save({
+          username: req.body.username,
+          password: hash,
+          admin: true
+        });
+      });
+    });
+    res.render('admin', { error: true });
+  }
 });
 
 app.get('/about', function (req, res) {
