@@ -72,12 +72,13 @@ var port = process.env.PORT || 3000;
 // configure the database URL
 var databaseUrl = process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
-  'robins-node-blog';
+  'codingbasix';
 
 // establish the mongo tables
 var collections = ['users','tutorial_categories'];
 // connect to the mongo DB
 var db = mongo.connect(databaseUrl, collections);
+db.users.ensureIndex({username: 1}, {unique: true});
 
 /***************************************/
 /***              ROUTE              ***/
@@ -128,20 +129,19 @@ app.get('/admin', function (req, res) {
 
 app.post('/admin', function (req, res) {
   console.log('POST /admin');
-  if(req.body.username == 'test' && req.body.password == 'pw') {
-    res.json(200, { data: 'got em'});
-  } else {
-    bcrypt.genSalt(10, function(err, salt) {
-      bcrypt.hash(req.body.password, salt, function(err, hash) {
-        db.users.save({
-          username: req.body.username,
-          password: hash,
-          admin: true
-        });
+  db.users.find({username:req.body.username}, function(err, user) {
+    if(!err && user.length) {
+      bcrypt.compare(req.body.password, user[0].password, function(err, valid) {
+        if(valid) {
+          res.json(200, { data: 'got em'});
+        } else {
+          res.render('admin', { error: true });
+        }
       });
-    });
-    res.render('admin', { error: true });
-  }
+    } else {
+      res.render('admin', { error: true });
+    }
+  });
 });
 
 app.get('/about', function (req, res) {
