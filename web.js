@@ -53,22 +53,6 @@ packer({
   }
 });
 
-app.configure(function(){
-	// ejs
-  app.set('view engine', 'ejs');
-	// ejs-locals for templating
-	app.engine('ejs', engine);
-  app.set('views', __dirname + '/views');
-  app.use(express.bodyParser());
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
-	app.use(express.cookieParser());
-	app.use(express.session({secret: process.env.SESSION_KEY || 'SECRETKEY'}));
-});
-
-// set the port
-var port = process.env.PORT || 3000;
-
 // configure the database URL
 var databaseUrl = process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
@@ -79,6 +63,24 @@ var collections = ['users','tutorial_categories'];
 // connect to the mongo DB
 var db = mongo.connect(databaseUrl, collections);
 db.users.ensureIndex({username: 1}, {unique: true});
+
+app.configure(function(){
+	// ejs
+  app.set('view engine', 'ejs');
+	// ejs-locals for templating
+	app.engine('ejs', engine);
+  app.set('views', __dirname + '/views');
+  app.use(express.bodyParser());
+  app.use(express.static(__dirname + '/public'));
+  app.use(express.cookieParser(process.env.SESSION_KEY || 'SECRETKEY'));
+  app.use(express.session({
+    secret: process.env.SESSION_KEY || 'SECRETKEY'
+  }));
+  app.use(app.router);
+});
+
+// set the port
+var port = process.env.PORT || 3000;
 
 /***************************************/
 /***              ROUTE              ***/
@@ -124,6 +126,7 @@ app.get('/blog', function (req, res) {
 
 app.get('/admin', function (req, res) {
   console.log('GET /admin');
+  console.log(req.session.username);
   res.render('admin', { error: false });
 });
 
@@ -133,7 +136,10 @@ app.post('/admin', function (req, res) {
     if(!err && user.length) {
       bcrypt.compare(req.body.password, user[0].password, function(err, valid) {
         if(valid) {
-          res.json(200, { data: 'got em'});
+          req.session.username = req.body.username;
+          console.log(req.session.username);
+          console.log(req.body.username);
+          res.redirect('/admin');
         } else {
           res.render('admin', { error: true });
         }
