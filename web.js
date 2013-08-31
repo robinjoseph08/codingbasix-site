@@ -2,12 +2,17 @@
 /***             REQUIRE             ***/
 /***************************************/
 
-var express = require('express')
-	, engine = require('ejs-locals')
-  , app = express()
-  , http = require('http')
-  , server = http.createServer(app)
-  , io = require('socket.io').listen(server)
+var //express = require('express')
+	// , engine = require('ejs-locals')
+  tty = require('tty.js')
+  , app = tty.createServer({
+      shell: 'bash',
+      shellArgs: ["-l"],
+      port: process.env.PORT || 3000
+    })
+  // , http = require('http')
+  // , server = http.createServer(app)
+  // , io = require('socket.io').listen(app)
   , mongo = require('mongojs')
   , packer = require('node.packer')
   , spawn = require('child_process').spawn
@@ -18,11 +23,11 @@ var express = require('express')
 /***            CONFIGURE            ***/
 /***************************************/
 
-io.configure(function () {
-  io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
-  io.set('log level', 1);
-});
+// io.configure(function () {
+//   io.set("transports", ["xhr-polling"]);
+//   io.set("polling duration", 10);
+//   io.set('log level', 1);
+// });
 
 packer({
   log: true,
@@ -33,6 +38,7 @@ packer({
     __dirname + '/stylesheets/header.css',
     __dirname + '/stylesheets/tutorials.css',
     __dirname + '/stylesheets/admin.css',
+    __dirname + '/stylesheets/tty.css',
     __dirname + '/stylesheets/font-awesome.min.css',
   ],
   output: __dirname + '/stylesheets/style.min.css',
@@ -64,23 +70,23 @@ var collections = ['users','tutorial_categories'];
 var db = mongo.connect(databaseUrl, collections);
 db.users.ensureIndex({username: 1}, {unique: true});
 
-app.configure(function(){
-	// ejs
-  app.set('view engine', 'ejs');
-	// ejs-locals for templating
-	app.engine('ejs', engine);
-  app.set('views', __dirname + '/views');
-  app.use(express.bodyParser());
-  app.use(express.static(__dirname + '/public'));
-  app.use(express.cookieParser(process.env.SESSION_KEY || 'SECRETKEY'));
-  app.use(express.session({
-    secret: process.env.SESSION_KEY || 'SECRETKEY'
-  }));
-  app.use(app.router);
-});
+// app.configure(function(){
+// 	// ejs
+//   app.set('view engine', 'ejs');
+// 	// ejs-locals for templating
+// 	app.engine('ejs', engine);
+//   app.set('views', __dirname + '/views');
+//   app.use(express.bodyParser());
+//   app.use(express.static(__dirname + '/public'));
+//   app.use(express.cookieParser(process.env.SESSION_KEY || 'SECRETKEY'));
+//   app.use(express.session({
+//     secret: process.env.SESSION_KEY || 'SECRETKEY'
+//   }));
+//   app.use(app.router);
+// });
 
 // set the port
-var port = process.env.PORT || 3000;
+// var port = process.env.PORT || 3000;
 
 /***************************************/
 /***              ROUTE              ***/
@@ -150,6 +156,18 @@ app.post('/admin', function (req, res) {
   });
 });
 
+app.get('/admin/*', function (req, res, next) {
+  console.log('checking for admin login');
+  console.log(req.session.username);
+  next();
+});
+
+app.get('/admin/blog', function (req, res, next) {
+  console.log('GET /admin/blog');
+  console.log(req.session.username);
+  res.render('admin/blog/index', {});
+});
+
 app.get('/about', function (req, res) {
   console.log('GET /about');
   res.render('about', {});
@@ -213,6 +231,12 @@ app.get('/fontawesome-webfont.(eot|woff|ttf|svg)', function (req, res) {
   res.sendfile(__dirname + '/fonts/fontawesome-webfont.' + req.params[0]);
 });
 
+// tty.js
+app.get('/tty.js', function (req, res) {
+  console.log('GET tty.js');
+  res.sendfile(__dirname + '/scripts/tty.js');
+});
+
 // Catch All For 404
 app.get('(*)', function (req, res) {
   console.log('GET ' + req.params[0]);
@@ -224,93 +248,95 @@ app.get('(*)', function (req, res) {
 /***              LISTEN             ***/
 /***************************************/
 
-server.listen(port, function() {
-	console.log('Listening on port ' + port);
-});
+// server.listen(port, function() {
+// 	console.log('Listening on port ' + port);
+// });
+
+app.listen();
 
 /***************************************/
 /***            SOCKET.IO            ***/
 /***************************************/
 
-io.sockets.on('connection', function(socket) {
-  var bashjs = fork(__dirname + '/bash.js');
-  socket.emit('home', {res: process.env['HOME']});
-  bashjs.on('message',function(m) {
-    if(m.stdout) {
-      socket.emit('term_res', {res: m.stdout});
-    }
-    if(m.cwd) {
-      socket.emit('dir', {res: m.cwd});
-    }
-    if(m.tab) {
-      socket.emit('tab', {res: m.tab});
-    }
-  });
-  // enetered command
-  socket.on('enter', function(data) {
-    console.log(data.cmd);
-    var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&').replace(/;/g,' ; ').replace(/ +/g,' ').replace(/^ | $/g,'');
-    // console.log(_cmd);
-    // if(new RegExp('(^ *| *\| *| *&& *| *; *)su( |$)|(^ *| *\| *| *&& *| *; *(then)* *)sudo( |$|;|&&)','g').test(_cmd)) {
-    //   bash.stdin.write('echo \'~~~ No root for you! ~~~\'\n');
-    // } else if(new RegExp('(^ *| *\| *| *&& *| *; *)rm( |$)|(^ *| *\| *| *&& *| *; *(then)* *)srm( |$|;|&&)','g').test(_cmd)) {
-    //   bash.stdin.write('echo \'~~~ You probably shouldn\'\'t be deleting things you don\'\'t know about... ~~~\'\n');
-    // } else {
-    //   bash.stdin.write(_cmd + '\n');
-    // }
-    // if(new RegExp('(^ *| *\| *| *&& *| *; *(then)* *)cd *[^|]*$|^ *$|>','g').test(_cmd)) {
-    //   state = 1;
-    //   bash.stdin.write('pwd\n');
-    // }
-    var cmd_array = _cmd.split(' ');
-    while(cmd_array.length > 1 && cmd_array[cmd_array.length-2][cmd_array[cmd_array.length-2].length-1] == '\\') {
-      cmd_array[cmd_array.length-1] = cmd_array[cmd_array.length-2] + ' ' + cmd_array[cmd_array.length-1]
-      cmd_array.splice(cmd_array.length-2,1);
-    }
-    console.log(cmd_array);
-    // var cmds_array = [];
-    // var current_cmd = [];
-    // for(var i = 0; i < cmd_array.length; i++) {
+// io.sockets.on('connection', function(socket) {
+//   var bashjs = fork(__dirname + '/bash.js');
+//   socket.emit('home', {res: process.env['HOME']});
+//   bashjs.on('message',function(m) {
+//     if(m.stdout) {
+//       socket.emit('term_res', {res: m.stdout});
+//     }
+//     if(m.cwd) {
+//       socket.emit('dir', {res: m.cwd});
+//     }
+//     if(m.tab) {
+//       socket.emit('tab', {res: m.tab});
+//     }
+//   });
+//   // enetered command
+//   socket.on('enter', function(data) {
+//     console.log(data.cmd);
+//     var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&').replace(/;/g,' ; ').replace(/ +/g,' ').replace(/^ | $/g,'');
+//     // console.log(_cmd);
+//     // if(new RegExp('(^ *| *\| *| *&& *| *; *)su( |$)|(^ *| *\| *| *&& *| *; *(then)* *)sudo( |$|;|&&)','g').test(_cmd)) {
+//     //   bash.stdin.write('echo \'~~~ No root for you! ~~~\'\n');
+//     // } else if(new RegExp('(^ *| *\| *| *&& *| *; *)rm( |$)|(^ *| *\| *| *&& *| *; *(then)* *)srm( |$|;|&&)','g').test(_cmd)) {
+//     //   bash.stdin.write('echo \'~~~ You probably shouldn\'\'t be deleting things you don\'\'t know about... ~~~\'\n');
+//     // } else {
+//     //   bash.stdin.write(_cmd + '\n');
+//     // }
+//     // if(new RegExp('(^ *| *\| *| *&& *| *; *(then)* *)cd *[^|]*$|^ *$|>','g').test(_cmd)) {
+//     //   state = 1;
+//     //   bash.stdin.write('pwd\n');
+//     // }
+//     var cmd_array = _cmd.split(' ');
+//     while(cmd_array.length > 1 && cmd_array[cmd_array.length-2][cmd_array[cmd_array.length-2].length-1] == '\\') {
+//       cmd_array[cmd_array.length-1] = cmd_array[cmd_array.length-2] + ' ' + cmd_array[cmd_array.length-1]
+//       cmd_array.splice(cmd_array.length-2,1);
+//     }
+//     console.log(cmd_array);
+//     // var cmds_array = [];
+//     // var current_cmd = [];
+//     // for(var i = 0; i < cmd_array.length; i++) {
 
-    // }
-    // bashjs.send({ cmds: [{ cmd: cmd_array[0], cmd_array: cmd_array.slice(1,cmd_array.length) }] });
-    bashjs.send({ cmd: cmd_array[0], cmd_array: cmd_array.slice(1,cmd_array.length) });
-  });
-  // tab completion
-  socket.on('tab', function(data) {
-    var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
-    var cur = '', cmd;
-    var cmd_array = _cmd.split(' ');
-    while(cmd_array.length > 1 && cmd_array[cmd_array.length-2][cmd_array[cmd_array.length-2].length-1] == '\\') {
-      cmd_array[cmd_array.length-1] = cmd_array[cmd_array.length-2] + ' ' + cmd_array[cmd_array.length-1];
-      cmd_array.splice(cmd_array.length-2,1);
-    }
-    var cmd_array2 = cmd_array[cmd_array.length-1].split('/');
-    cmd = cmd_array2[cmd_array2.length-1];
-    for(var i = 0; i < cmd_array2.length-1; i++) {
-      cur += cmd_array2[i] + '/';
-    }
-    bashjs.send({ tab: true, cmd: cmd, cur: cur });
-  });
-  // ^C
-  socket.on('ctrl_c', function(data) {
-    bashjs.send({ ctrl_c: true });
-  });
-  // ^D
-  socket.on('ctrl_d', function(data) {
-    bashjs.send({ ctrl_d: true });
-  });
-  // stdin
-  socket.on('stdin', function(data) {
-    var str = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
-    bashjs.send({ stdin: true, str: str });
-  });
+//     // }
+//     // bashjs.send({ cmds: [{ cmd: cmd_array[0], cmd_array: cmd_array.slice(1,cmd_array.length) }] });
+//     bashjs.send({ cmd: cmd_array[0], cmd_array: cmd_array.slice(1,cmd_array.length) });
+//   });
+//   // tab completion
+//   socket.on('tab', function(data) {
+//     var _cmd = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
+//     var cur = '', cmd;
+//     var cmd_array = _cmd.split(' ');
+//     while(cmd_array.length > 1 && cmd_array[cmd_array.length-2][cmd_array[cmd_array.length-2].length-1] == '\\') {
+//       cmd_array[cmd_array.length-1] = cmd_array[cmd_array.length-2] + ' ' + cmd_array[cmd_array.length-1];
+//       cmd_array.splice(cmd_array.length-2,1);
+//     }
+//     var cmd_array2 = cmd_array[cmd_array.length-1].split('/');
+//     cmd = cmd_array2[cmd_array2.length-1];
+//     for(var i = 0; i < cmd_array2.length-1; i++) {
+//       cur += cmd_array2[i] + '/';
+//     }
+//     bashjs.send({ tab: true, cmd: cmd, cur: cur });
+//   });
+//   // ^C
+//   socket.on('ctrl_c', function(data) {
+//     bashjs.send({ ctrl_c: true });
+//   });
+//   // ^D
+//   socket.on('ctrl_d', function(data) {
+//     bashjs.send({ ctrl_d: true });
+//   });
+//   // stdin
+//   socket.on('stdin', function(data) {
+//     var str = data.cmd.replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&');
+//     bashjs.send({ stdin: true, str: str });
+//   });
 
-  socket.on('disconnect', function () {
-    console.log('socket disconnected');
-    bashjs.disconnect();
-  });
-});
+//   socket.on('disconnect', function () {
+//     console.log('socket disconnected');
+//     bashjs.disconnect();
+//   });
+// });
 
 
 
