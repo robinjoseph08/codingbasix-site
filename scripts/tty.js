@@ -205,7 +205,9 @@ function Window(socket) {
     , grip
     , bar
     , button
-    , title;
+    , title
+    , tabContainer
+    , newTab;
 
   el = document.createElement('div');
   el.className = 'term-window';
@@ -217,7 +219,6 @@ function Window(socket) {
   bar.className = 'bar';
 
   button = document.createElement('div');
-  button.className = 'tab';
 
   buttonsContainer = document.createElement('div');
   buttonsContainer.className = 'buttons-container';
@@ -237,6 +238,14 @@ function Window(socket) {
   title.className = 'title';
   title.innerHTML = '';
 
+  tabContainer = document.createElement('div');
+  tabContainer.className = 'tab-container';
+
+  newTab = document.createElement('div');
+  newTab.title = 'New Tab';
+  newTab.innerHTML = '+';
+  newTab.className = 'new-tab';
+
   this.socket = socket || tty.socket;
   this.element = el;
   this.grip = grip;
@@ -247,6 +256,8 @@ function Window(socket) {
   this.minButton = minButton;
   this.maxButton = maxButton;
   this.title = title;
+  this.tabContainer = tabContainer;
+  this.newTab = newTab;
 
   this.tabs = [];
   this.focused = null;
@@ -256,12 +267,14 @@ function Window(socket) {
 
   el.appendChild(grip);
   el.appendChild(bar);
+  el.appendChild(tabContainer);
   bar.appendChild(button);
   bar.appendChild(title);
   button.appendChild(buttonsContainer);
   buttonsContainer.appendChild(xButton);
   buttonsContainer.appendChild(minButton);
   buttonsContainer.appendChild(maxButton);
+  tabContainer.appendChild(newTab);
   body.appendChild(el);
 
   tty.windows.push(this);
@@ -287,16 +300,13 @@ Window.prototype.bind = function() {
     , xButton = this.xButton
     , maxButton = this.maxButton
     , title = this.title
+    , newTab = this.newTab
     , last = 0;
 
-  // on(button, 'click', function(ev) {
-  //   if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
-  //     self.destroy();
-  //   } else {
-  //     self.createTab();
-  //   }
-  //   return cancel(ev);
-  // });
+  on(newTab, 'click', function(ev) {
+    self.createTab();
+    return cancel(ev);
+  });
 
   on(grip, 'mousedown', function(ev) {
     self.focus();
@@ -597,8 +607,9 @@ function Tab(win, socket) {
 
   var button = document.createElement('div');
   button.className = 'tab';
-  button.innerHTML = '\u2022';
-  win.bar.appendChild(button);
+  button.innerHTML = 'bash';
+  // win.tabContainer.appendChild(button);
+  win.tabContainer.insertBefore(button,win.tabContainer.lastChild);
 
   on(button, 'click', function(ev) {
     if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
@@ -646,6 +657,7 @@ Tab.prototype.handleTitle = function(title) {
 
   title = sanitize(title);
   this.title = title;
+  this.button.innerHTML = title;
 
   if (Terminal.focus === this) {
     document.title = title;
@@ -678,7 +690,7 @@ Tab.prototype.focus = function() {
       if (win.focused.element.parentNode) {
         win.focused.element.parentNode.removeChild(win.focused.element);
       }
-      win.focused.button.style.fontWeight = '';
+      win.focused.button.classList.remove('active');
     }
 
     win.element.appendChild(this.element);
@@ -686,7 +698,7 @@ Tab.prototype.focus = function() {
 
     win.title.innerHTML = this.process;
     document.title = this.title || initialTitle;
-    this.button.style.fontWeight = 'bold';
+    this.button.classList.add('active');
     this.button.style.color = '';
   }
 
@@ -886,6 +898,7 @@ Tab.prototype.setProcessName = function(name) {
 
   this.process = name;
   this.button.title = name;
+  this.button.innerHTML = name;
 
   if (this.window.focused === this) {
     // if (this.title) {
